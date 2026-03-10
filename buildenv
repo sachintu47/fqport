@@ -1,7 +1,7 @@
 # Update bump details accordingly. Use bump check to confirm.
 # bump: fq-version /FQ_VERSION="(.*)"/ https://github.com/wader/fq.git|semver:*
-# FQ_VERSION="0.15.0" # Specify a stable release
-# export ZOPEN_STABLE_TAG="v${FQ_VERSION}"
+FQ_VERSION="0.16.0" # Specify a stable release
+export ZOPEN_STABLE_TAG="v${FQ_VERSION}"
 export ZOPEN_STABLE_URL="https://github.com/wader/fq.git"
 export ZOPEN_STABLE_DEPS="coreutils wharf"
 export ZOPEN_DEV_URL="https://github.com/wader/fq.git"
@@ -25,6 +25,7 @@ zopen_init()
   # Go installs binaries, so create the bin dir as well
   export GOBIN=$ZOPEN_INSTALL_DIR/bin
   unset CC CXX
+  export CGO_ENABLED=0
   export PATH=$PATH:$GOROOT/go-build-zos/bin
 }
 
@@ -32,24 +33,23 @@ zopen_wharf()
 {
   cd ..
   
-  git clone https://github.com/ergochat/readline.git
-  cd readline
-  git apply -v --ignore-space-change --ignore-whitespace ../patches/readline-patch
-  cd ..
-  
-  go work init ./fq ./readline
+  if [ ! -f go.work ]; then
+    go work init ./fq
+  else
+    go work use ./fq
+  fi
   wharf ./fq/
   cd ./fq
 }
 
 zopen_install()
 {
-  go install
+  go install ./...
 }
 
 zopen_clean()
 {
-  rm -rf ../.wharf_cache ../go.work* ../wharf_port
+  rm -rf ../.wharf_cache ../go.work* ../wharf_port ../readline
 }
 
 zopen_get_version()
