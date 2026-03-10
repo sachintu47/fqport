@@ -33,14 +33,10 @@ zopen_wharf()
 {
   cd ..
   
-  if [ ! -d readline ]; then
-    git clone https://github.com/ergochat/readline.git
-  fi
-  
   if [ ! -f go.work ]; then
-    go work init ./fq ./readline
+    go work init ./fq
   else
-    go work use ./fq ./readline
+    go work use ./fq
   fi
   wharf ./fq/
   cd ./fq
